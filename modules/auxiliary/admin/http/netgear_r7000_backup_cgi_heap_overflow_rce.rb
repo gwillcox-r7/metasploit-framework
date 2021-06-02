@@ -3,7 +3,7 @@
 # Current source: https://github.com/rapid7/metasploit-framework
 ##
 
-class MetasploitModule < Msf::Exploit::Remote
+class MetasploitModule < Msf::Auxiliary
   Rank = ExcellentRanking
 
   include Msf::Exploit::Remote::HttpClient
@@ -93,16 +93,16 @@ class MetasploitModule < Msf::Exploit::Remote
       print_status("Router is a NETGEAR router (#{model})")
       if model == 'R7000'
         if check_vuln_firmware
-          return CheckCode::Vulnerable
+          return Exploit::CheckCode::Vulnerable
         else
-          return CheckCode::Safe
+          return Exploit::CheckCode::Safe
         end
       else
-        return CheckCode::Safe
+        return Exploit::CheckCode::Safe
       end
     else
       print_error('Router is not a NETGEAR router')
-      return CheckCode::Safe
+      return Exploit::CheckCode::Safe
     end
   end
 
@@ -323,7 +323,7 @@ class MetasploitModule < Msf::Exploit::Remote
     print_good('Exploit complete, connect to your shell!')
   end
 
-  def exploit
+  def run
     unless fake_logins_to_ease_heap # Set the heap to a more predictable state via a series of fake logins.
       fail_with(Failure::UnexpectedReply, 'The target R7000 router did not send us the expected 200 OK response after 3 invalid login attempts!')
     end
