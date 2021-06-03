@@ -4,8 +4,6 @@
 ##
 
 class MetasploitModule < Msf::Auxiliary
-  Rank = ExcellentRanking
-
   include Msf::Exploit::Remote::HttpClient
   prepend Msf::Exploit::Remote::AutoCheck
 
