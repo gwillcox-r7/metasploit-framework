@@ -61,12 +61,12 @@ class MetasploitModule < Msf::Auxiliary
   def check_vuln_firmware
     res = send_request_cgi({ 'uri' => '/MNU_access_login_top.htm' })
     if res.nil?
-      fail_with(Failure::Unreachable, 'Connection timed out.')
+      return CheckCode::Unknown('Connection timed out.')
     end
     data = res.to_s
     firmware_version = data.match(%r{<b>Firmware Version</b><br>V(\d+\.\d+\.\d+\.\d+)})
     if firmware_version.nil?
-      fail_with(Failure::Unknown, 'Could not retrieve firmware version!')
+      return CheckCode::Unknown('Could not retrieve firmware version!')
     end
     firmware_version = Rex::Version.new(firmware_version[1])
     if firmware_version <= Rex::Version.new('1.0.11.116') || firmware_version == Rex::Version.new('1.0.11.208') || firmware_version == Rex::Version.new('1.0.11.204')
@@ -80,7 +80,7 @@ class MetasploitModule < Msf::Auxiliary
   def check
     res = send_request_cgi({ 'uri' => '/' })
     if res.nil?
-      fail_with(Failure::Unreachable, 'Connection timed out.')
+      return CheckCode::Unknown('Connection timed out.')
     end
     # Checks for the `WWW-Authenticate` header in the response
     if res.headers['WWW-Authenticate']
@@ -89,15 +89,10 @@ class MetasploitModule < Msf::Auxiliary
       marker_two = '"'
       model = scrape(data, marker_one, marker_two)
       print_status("Router is a NETGEAR router (#{model})")
-      if model == 'R7000'
-        if check_vuln_firmware
-          return Exploit::CheckCode::Vulnerable
-        else
-          return Exploit::CheckCode::Safe
-        end
-      else
-        return Exploit::CheckCode::Safe
+      if model == 'R7000' && check_vuln_firmware
+        return Exploit::CheckCode::Vulnerable
       end
+      return Exploit::CheckCode::Safe
     else
       print_error('Router is not a NETGEAR router')
       return Exploit::CheckCode::Safe

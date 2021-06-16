@@ -1,5 +1,5 @@
 ## Introduction
-This module exploits an heap buffer overflow in the `genie.cgi?backup.cgi`
+This module exploits a heap buffer overflow in the `genie.cgi?backup.cgi`
 page of Netgear R7000 routers running firmware versions `1.0.11.116` and prior.
 Successful exploitation results in unauthenticated attackers gaining
 code execution as the `root` user.
