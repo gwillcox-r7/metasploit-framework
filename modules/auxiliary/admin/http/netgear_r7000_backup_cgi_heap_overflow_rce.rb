@@ -61,12 +61,12 @@ class MetasploitModule < Msf::Auxiliary
   def check_vuln_firmware
     res = send_request_cgi({ 'uri' => '/MNU_access_login_top.htm' })
     if res.nil?
-      return CheckCode::Unknown('Connection timed out.')
+      return Exploit::CheckCode::Unknown('Connection timed out.')
     end
     data = res.to_s
     firmware_version = data.match(%r{<b>Firmware Version</b><br>V(\d+\.\d+\.\d+\.\d+)})
     if firmware_version.nil?
-      return CheckCode::Unknown('Could not retrieve firmware version!')
+      return Exploit::CheckCode::Unknown('Could not retrieve firmware version!')
     end
     firmware_version = Rex::Version.new(firmware_version[1])
     if firmware_version <= Rex::Version.new('1.0.11.116') || firmware_version == Rex::Version.new('1.0.11.208') || firmware_version == Rex::Version.new('1.0.11.204')
@@ -79,8 +79,8 @@ class MetasploitModule < Msf::Auxiliary
   # Requests the login page which discloses the hardware. If it's an R7000 router, check if the firmware version is vulnerable.
   def check
     res = send_request_cgi({ 'uri' => '/' })
-    if res.nil?
-      return CheckCode::Unknown('Connection timed out.')
+    if res.nil? || res.empty?
+      return Exploit::CheckCode::Unknown('Connection timed out.')
     end
     # Checks for the `WWW-Authenticate` header in the response
     if res.headers['WWW-Authenticate']
