@@ -55,8 +55,7 @@ module Process
   def execute_dll(rdll_path, param=nil, pid=nil)
     process_list = ['sigverif', 'netsh', 'nslookup', 'winver', 'nbtstat -r 200', 'dxpserver', 'sndvol', 'netstat 200']
     if pid.nil?
-      offset_num = rand(0..process_list.length-1)
-      process_cmd = process_list[offset_num]
+      process_cmd = process_list.sample
       print_status("Launching #{process_cmd} to host the DLL...")
       host_process = client.sys.process.execute(process_cmd, nil, { 'Hidden' => true })
       begin
