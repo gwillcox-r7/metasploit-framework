@@ -59,7 +59,7 @@ module Process
       process_cmd = process_list.sample
 
       # Use Rex's PeParsey as per Spencer's suggestion to determine the true architecture of the DLL we are injecting.
-      pe = Rex::PeParsey::Pe.new_from_file(library_path, true)
+      pe = Rex::PeParsey::Pe.new_from_file(rdll_path, true)
       arch = pe.hdr.file['Machine'].value
 
       # If the DLL is x86 but the host architecture is x64, then launch a 32 bit WoW64 binary to inject into.
